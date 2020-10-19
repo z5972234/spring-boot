@@ -291,6 +291,9 @@ public class SpringApplication {
 
 	/**
 	 * Run the Spring application, creating and refreshing a new
+	 *
+	 * 项目启动入口方法
+	 *
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
@@ -300,6 +303,7 @@ public class SpringApplication {
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+		// 开启headless模式
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();

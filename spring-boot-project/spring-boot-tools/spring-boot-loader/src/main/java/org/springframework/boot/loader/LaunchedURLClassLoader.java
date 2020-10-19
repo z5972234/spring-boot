@@ -46,6 +46,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	private static final int BUFFER_SIZE = 4096;
 
 	static {
+		// 设置并行加载
 		ClassLoader.registerAsParallelCapable();
 	}
 

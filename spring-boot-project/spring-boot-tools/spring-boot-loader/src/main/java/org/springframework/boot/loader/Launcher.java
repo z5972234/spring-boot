@@ -52,8 +52,10 @@ public abstract class Launcher {
 		if (!isExploded()) {
 			JarFile.registerUrlProtocolHandler();
 		}
+		// 创建自定义的class loader
 		ClassLoader classLoader = createClassLoader(getClassPathArchivesIterator());
 		String jarMode = System.getProperty("jarmode");
+		// 拿到start class，就是我们项目中的main方法类
 		String launchClass = (jarMode != null && !jarMode.isEmpty()) ? JAR_MODE_LAUNCHER : getMainClass();
 		launch(args, launchClass, classLoader);
 	}
