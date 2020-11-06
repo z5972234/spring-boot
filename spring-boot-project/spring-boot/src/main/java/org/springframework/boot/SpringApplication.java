@@ -305,6 +305,7 @@ public class SpringApplication {
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		// 开启headless模式
 		configureHeadlessProperty();
+		// 创建应用运行监听器
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -318,9 +319,12 @@ public class SpringApplication {
 			Banner printedBanner = printBanner(environment);
 			// 创建应用上下文
 			context = createApplicationContext();
+			// 创建异常报告器
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
+			// 准备上下文
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+			// 刷新上下文
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -429,11 +433,17 @@ public class SpringApplication {
 		return getSpringFactoriesInstances(type, new Class<?>[] {});
 	}
 
+	/**
+	 * spring工厂，从 META-INF/spring.factories 中获取指定类型的实现，可以有多个实现，所以返回集合，
+	 * 如文件中无指定类型的定义则返回空集合
+	 */
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type, Class<?>[] parameterTypes, Object... args) {
 		ClassLoader classLoader = getClassLoader();
-		// Use names and ensure unique to protect against duplicates
+		// 从 META-INF/spring.factories 中获取指定类型的实现类名
 		Set<String> names = new LinkedHashSet<>(SpringFactoriesLoader.loadFactoryNames(type, classLoader));
+		// 反射创建对象
 		List<T> instances = createSpringFactoriesInstances(type, parameterTypes, classLoader, args, names);
+		// 根据优先级排序
 		AnnotationAwareOrderComparator.sort(instances);
 		return instances;
 	}
