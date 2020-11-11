@@ -70,6 +70,8 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * binary compatibility.
 	 * @return the shared {@code ApplicationConversionService} instance (never
 	 * {@code null})
+	 *
+	 * 单例创建 ApplicationConversionService 实例
 	 */
 	public static ConversionService getSharedInstance() {
 		ApplicationConversionService sharedInstance = ApplicationConversionService.sharedInstance;

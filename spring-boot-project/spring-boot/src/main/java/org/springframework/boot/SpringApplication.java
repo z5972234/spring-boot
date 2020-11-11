@@ -268,9 +268,17 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+
+		// 根据项目中包，判断是webMvc还是webFlux
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+
+		// 实例化所有的ApplicationContextInitializer实现，在META-INF/spring.factories中定义了的
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+
+		// 实例化所有的ApplicationListener实现，在META-INF/spring.factories中定义了的
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+
+		// 获取启动main方法所在的类
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -311,7 +319,7 @@ public class SpringApplication {
 		try {
 			// 封装应用启动参数
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			// 准备环境
+			// 创建配置环境
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
 			// 填充spring.beaninfo.ignore 配置
 			configureIgnoreBeanInfo(environment);
@@ -324,7 +332,7 @@ public class SpringApplication {
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			// 准备上下文
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-			// 刷新上下文
+			// 加载所有的配置，实例化各种spring bean
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -332,6 +340,7 @@ public class SpringApplication {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), stopWatch);
 			}
 			listeners.started(context);
+			// 调用所有的 ApplicationRunner和CommandLineRunner 实现
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -351,10 +360,12 @@ public class SpringApplication {
 
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
 			ApplicationArguments applicationArguments) {
-		// Create and configure the environment
+		// Create environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
+		// 将启动参数放入environment
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
 		ConfigurationPropertySources.attach(environment);
+		// environment已经准备好通知事件
 		listeners.environmentPrepared(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
@@ -1243,6 +1254,8 @@ public class SpringApplication {
 	 * @param primarySource the primary source to load
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return the running {@link ApplicationContext}
+	 *
+	 * 入口
 	 */
 	public static ConfigurableApplicationContext run(Class<?> primarySource, String... args) {
 		return run(new Class<?>[] { primarySource }, args);
@@ -1256,6 +1269,7 @@ public class SpringApplication {
 	 * @return the running {@link ApplicationContext}
 	 */
 	public static ConfigurableApplicationContext run(Class<?>[] primarySources, String[] args) {
+		// 实例化SpringApplication
 		return new SpringApplication(primarySources).run(args);
 	}
 
