@@ -391,27 +391,35 @@ public class SpringApplication {
 			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
+
+		// 调用所有的ApplicationContextInitializer的初始化方法
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
+			// true
+			// 打印日志，启动环境信息，主机名、pid、用户名及目录等
 			logStartupInfo(context.getParent() == null);
+			// 打印日志，运行环境，即spring.profiles.active的配置
 			logStartupProfileInfo(context);
 		}
-		// Add boot specific singleton beans
+		// 把启动相关的对象注册到spring bean管理
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		beanFactory.registerSingleton("springApplicationArguments", applicationArguments);
 		if (printedBanner != null) {
 			beanFactory.registerSingleton("springBootBanner", printedBanner);
 		}
 		if (beanFactory instanceof DefaultListableBeanFactory) {
+			// true 禁止同名Bean覆盖
 			((DefaultListableBeanFactory) beanFactory)
 					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
 		}
 		if (this.lazyInitialization) {
+			// false 默认不使用懒加载
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
 		// Load the sources
 		Set<Object> sources = getAllSources();
+		// 至少有个启动类(primarySources),否则报错
 		Assert.notEmpty(sources, "Sources must not be empty");
 		load(context, sources.toArray(new Object[0]));
 		listeners.contextLoaded(context);
