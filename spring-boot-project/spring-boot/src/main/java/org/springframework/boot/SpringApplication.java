@@ -332,7 +332,8 @@ public class SpringApplication {
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			// 准备上下文
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-			// 加载所有的配置，实例化各种spring bean
+
+			// 加载所有的配置，注册各种spring bean
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -417,10 +418,12 @@ public class SpringApplication {
 			// false 默认不使用懒加载
 			context.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor());
 		}
-		// Load the sources
+		// Load the sources，primarySources
 		Set<Object> sources = getAllSources();
-		// 至少有个启动类(primarySources),否则报错
+		// 至少有个主类(primarySources),否则报错
 		Assert.notEmpty(sources, "Sources must not be empty");
+
+		// 加载主类到上下文
 		load(context, sources.toArray(new Object[0]));
 		listeners.contextLoaded(context);
 	}
