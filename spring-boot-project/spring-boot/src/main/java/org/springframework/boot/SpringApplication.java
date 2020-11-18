@@ -48,6 +48,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -170,6 +171,8 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for web
 	 * environments.
+	 *
+	 * @see AnnotationConfigServletWebServerApplicationContext
 	 */
 	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
 			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
@@ -325,16 +328,16 @@ public class SpringApplication {
 			configureIgnoreBeanInfo(environment);
 			// 打印spring boot图标
 			Banner printedBanner = printBanner(environment);
-			// 创建应用上下文
+			// 创建spring应用上下文
 			context = createApplicationContext();
 			// 创建异常报告器
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
-			// 准备上下文
+			// 上下文refresh前，做一些处理
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
-
-			// 加载所有的配置，注册各种spring bean
+			// 上下文refresh，主逻辑在 AbstractApplicationContext#refresh
 			refreshContext(context);
+			// 上下文refresh前，做一些处理
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
