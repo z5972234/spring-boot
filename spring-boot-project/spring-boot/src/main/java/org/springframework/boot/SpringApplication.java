@@ -337,7 +337,7 @@ public class SpringApplication {
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
 			// 上下文refresh，主逻辑在 AbstractApplicationContext#refresh
 			refreshContext(context);
-			// 上下文refresh前，做一些处理
+			// 上下文refresh后，做一些处理
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
